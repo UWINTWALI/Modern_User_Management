@@ -1,120 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>User Management</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<body>
+  <body>
     <div class="container mt-4">
-        <h2 class="text-center mb-4">User Management</h2>
+      <h2 class="text-center mb-4">User Management</h2>
 
-        <!-- Add User Button -->
-        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#userModal"
-            onclick="openCreateModal()">Add User</button>
+      <!-- Add User Button -->
+      <button
+        class="btn btn-primary mb-3"
+        data-bs-toggle="modal"
+        data-bs-target="#userModal"
+        onclick="openCreateModal()"
+      >
+        Add User
+      </button>
 
-        <div class="row">
-            {% for user in users %}
-            <div class="col-md-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body text-center">
-                        <img src="https://via.placeholder.com/80" class="rounded-circle mb-2" alt="User">
-                        <h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
-                        <p class="card-text text-muted">{{ user.email }}</p>
-                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal"
-                            onclick="openEditModal({{ user.id }}, '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}')">Edit</button>
-                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                            onclick="openDeleteModal({{ user.id }})">Delete</button>
-                    </div>
-                </div>
+      <div class="row">
+        {% for user in users %}
+        <div class="col-md-4">
+          <div class="card shadow-sm mb-4">
+            <div class="card-body text-center">
+              <!-- Check if the user has a profile picture, otherwise use a placeholder -->
+              <img
+                src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://via.placeholder.com/80{% endif %}"
+                class="rounded-circle mb-2"
+                alt="User"
+                style="width: 80px; height: 80px"
+              />
+              <h5 class="card-title">
+                {{ user.first_name }} {{ user.last_name }}
+              </h5>
+              <p class="card-text text-muted">{{ user.email }}</p>
+              <button
+                class="btn btn-warning btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#userModal"
+                onclick="openEditModal({{ user.id }}, '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}')"
+              >
+                Edit
+              </button>
+              <button
+                class="btn btn-danger btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal"
+                onclick="openDeleteModal({{ user.id }})"
+              >
+                Delete
+              </button>
             </div>
-            {% endfor %}
+          </div>
         </div>
+        {% endfor %}
+      </div>
     </div>
 
     <!-- Modal for Add/Edit User -->
     <div class="modal fade" id="userModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Add User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="userForm" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" id="userId" name="user_id">
-                        <div class="mb-3">
-                            <label for="first_name" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="last_name" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
-                </div>
-            </div>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">Edit User</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="userForm" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" id="userId" name="user_id" />
+              <div class="mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="first_name"
+                  name="first_name"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="last_name"
+                  name="last_name"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="profile_picture" class="form-label"
+                  >Profile Picture</label
+                >
+                {% if user.profile_picture %}
+                <img
+                  src="{{ user.profile_picture.url }}"
+                  alt="Profile Picture"
+                  class="mb-2"
+                  width="80"
+                />
+                {% endif %}
+                <input
+                  type="file"
+                  class="form-control"
+                  id="profile_picture"
+                  name="profile_picture"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Modal for Delete Confirmation -->
     <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this user?</p>
-                </div>
-                <div class="modal-footer">
-                    <form id="deleteForm" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-
-
-                </div>
-            </div>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this user?</p>
+          </div>
+          <div class="modal-footer">
+            <form id="deleteForm" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
 
     <script>
-        function openCreateModal() {
-            document.getElementById('modalTitle').innerText = 'Add User';
-            document.getElementById('userForm').action = "{% url 'user_create' %}";
-            document.getElementById('userId').value = "";
-            document.getElementById('first_name').value = "";
-            document.getElementById('last_name').value = "";
-            document.getElementById('email').value = "";
+      function openCreateModal() {
+        document.getElementById("modalTitle").innerText = "Add User";
+        document.getElementById("userForm").action = "{% url 'user_create' %}";
+        document.getElementById("userId").value = "";
+        document.getElementById("first_name").value = "";
+        document.getElementById("last_name").value = "";
+        document.getElementById("email").value = "";
+      }
+
+      function openEditModal(
+        id,
+        first_name,
+        last_name,
+        email,
+        profile_picture_url
+      ) {
+        document.getElementById("modalTitle").innerText = "Edit User";
+        document.getElementById("userForm").action = `/update/${id}/`;
+        document.getElementById("userId").value = id;
+        document.getElementById("first_name").value = first_name;
+        document.getElementById("last_name").value = last_name;
+        document.getElementById("email").value = email;
+
+        // Set the profile picture URL if available
+        if (profile_picture_url) {
+          // Display the existing image in the modal (if necessary)
+          document.getElementById("profile_picture_preview").src =
+            profile_picture_url;
         }
+      }
 
-        function openEditModal(id, first_name, last_name, email) {
-                document.getElementById('modalTitle').innerText = 'Edit User';
-                document.getElementById('userForm').action = `/update/${id}/`; 
-                document.getElementById('userId').value = id;
-                document.getElementById('first_name').value = first_name;
-                document.getElementById('last_name').value = last_name;
-                document.getElementById('email').value = email;
-            }
-
-
-        function openDeleteModal(id) {
-            document.getElementById('deleteForm').action = `/delete/${id}/`;
-        }
+      function openDeleteModal(id) {
+        document.getElementById("deleteForm").action = `/delete/${id}/`;
+      }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
+  </body>
 </html>
