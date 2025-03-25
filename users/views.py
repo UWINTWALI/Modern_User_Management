@@ -42,3 +42,8 @@ def user_update(request, pk):
 
     return render(request, 'users/user_form.html', {'form': form, 'user': user})
 
+def user_detail(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    return render(request, 'users/user_detail.html', {'user': user})
+
+

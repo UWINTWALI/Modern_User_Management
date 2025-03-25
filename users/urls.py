@@ -8,7 +8,10 @@ urlpatterns = [
     path('create/', views.user_create, name='user_create'),
     path('update/<int:pk>/', views.user_update, name='user_update'),
     path('delete/<int:user_id>/', views.user_delete, name='user_delete'),
+    path('details/<int:user_id>/', views.user_detail, name='user_detail'), 
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
