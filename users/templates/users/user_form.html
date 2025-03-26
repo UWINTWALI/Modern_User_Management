@@ -11,8 +11,40 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
+
+        <div class="mb-3">
+            <label for="locationInput" class="form-label">Location</label>
+            <input type="text" class="form-control" id="locationInput" name="location_name"
+                placeholder="Start typing a location..." />
+            <div id="locationSuggestions" class="list-group"></div>
+        </div>
+
         <button type="submit">Save</button>
     </form>
+
+    <script>
+        document.getElementById("locationInput").addEventListener("input", function () {
+            let query = this.value;
+            if (query.length > 2) {
+                fetch(`/search_location/?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let suggestions = document.getElementById("locationSuggestions");
+                        suggestions.innerHTML = "";
+                        data.forEach(location => {
+                            let item = document.createElement("a");
+                            item.classList.add("list-group-item", "list-group-item-action");
+                            item.textContent = location.name;
+                            item.onclick = function () {
+                                document.getElementById("locationInput").value = location.name;
+                                suggestions.innerHTML = "";
+                            };
+                            suggestions.appendChild(item);
+                        });
+                    });
+            }
+        });
+    </script>
 </body>
 
 </html>
