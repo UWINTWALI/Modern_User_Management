@@ -1,1 +1,13 @@
+# Virtual Environment
 venv/
+
+# Environment Variables
+.env
+
+# Documentation
+new_model.md
+models.md
+
+# Ignore media uploads
+media/profile_pics/
+

@@ -99,6 +99,40 @@
     color: white;
 }
 
+/* Header row for user list */
+/* User List Header */
+.user-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    font-weight: bold;
+    padding: 12px 10px;
+    border-bottom: 2px solid #ccc;
+}
+
+/* Header items aligned with the user list */
+.header-item {
+    flex: 1;
+    text-align: left;
+    padding-left: 10px;
+}
+
+/* Ensure header and list items align */
+.user-info {
+    flex: 1;
+}
+
+.user-location {
+    flex: 1;
+}
+
+.manage-btn {
+    text-align: right;
+    flex: 1;
+}
+
+
 
   </style>
 </head>
@@ -112,41 +146,52 @@
 
       <!-- Display user in good alignment -->
   
-    <ul class="list-unstyled">
-      {% for user in users %}
-      <li class="user-list-item">
-        <!-- User Info -->
-        <div class="user-info">
-          <img
-            src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}/media/profile_pics/default_profile.png{% endif %}"
-            alt="User">
-          <div class="user-details">
-            <h6 class="mb-0 fw-bold">{{ user.first_name }} {{ user.last_name }}</h6>
-            <p class="text-muted mb-0" style="font-size: 0.85rem;">{{ user.email }}</p>
-          </div>
-        </div>
+    <div class="user-list-container">
+      <!-- Header Row -->
+      <div class="user-list-header">
+        <div class="header-item">Full Names</div>
+        <div class="header-item">Location</div>
+        <div class="header-item">Action</div>
+      </div>
     
-        <!-- Location (Aligned Left) -->
-        <div class="user-location">
-          <p class="text-muted mb-0 fw-semibold">{{ user.location.name }}</p>
-        </div>
-    
-        <!-- Manage Button -->
-        <div class="manage-btn">
-          <div class="btn-group">
-            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">Manage</button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#userModal"
-                  onclick="openEditModal('{{ user.id }}', '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}', '{{ user.location.name }}')">Edit</a>
-              </li>
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                  onclick="openDeleteModal('{{ user.id }}')">Delete</a></li>
-            </ul>
+      <ul class="list-unstyled">
+        {% for user in users %}
+        <li class="user-list-item">
+          <!-- User Info -->
+          <div class="user-info">
+            <img
+              src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}/media/profile_pics/default_profile.png{% endif %}"
+              alt="User">
+            <div class="user-details">
+              <h6 class="mb-0 fw-bold">{{ user.first_name }} {{ user.last_name }}</h6>
+              <p class="text-muted mb-0" style="font-size: 0.85rem;">{{ user.email }}</p>
+            </div>
           </div>
-        </div>
-      </li>
-      {% endfor %}
-    </ul>
+    
+          <!-- Location -->
+          <div class="user-location">
+            <p class="text-muted mb-0 fw-semibold">{{ user.location.name }}</p>
+          </div>
+    
+          <!-- Manage Button -->
+          <div class="manage-btn">
+            <div class="btn-group">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                data-bs-toggle="dropdown">Manage</button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#userModal"
+                    onclick="openEditModal('{{ user.id }}', '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}', '{{ user.location.name }}')">Edit</a>
+                </li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                    onclick="openDeleteModal('{{ user.id }}')">Delete</a></li>
+              </ul>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
 
   </div>
 
