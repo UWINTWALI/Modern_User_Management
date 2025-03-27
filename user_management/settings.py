@@ -73,16 +73,7 @@ WSGI_APPLICATION = 'user_management.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql', 
-#         'NAME': 'usermanagementdb',  
-#         'USER': 'mucyoumd',  
-#         'PASSWORD': 'Proumd&25', 
-#         'HOST': 'localhost',  
-#         'PORT': '5432',  
-#     }
-# }
+
 import os
 from dotenv import load_dotenv
 # Load environment variables from .env file
