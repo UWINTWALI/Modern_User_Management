@@ -2,327 +2,85 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User Management</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
-
-    /* Display users  */
-   .user-list-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #ccc;
-    padding: 10px 10px;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    flex: 1; /* Ensures it takes necessary space */
-}
-
-.user-info img {
-    border-radius: 50%;
-    margin-right: 10px;
-    width: 40px;
-    height: 40px;
-}
-
-.user-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-location {
-    flex: 1; /* Ensures it stretches and aligns */
-    text-align: left;
-    padding-left: 20px; /* Adjust for spacing */
-}
-
-.manage-btn {
-    margin-left: auto;
-}
-
-
-
-
-    /* Location Input Field */
-.location-input {
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    transition: all 0.3s ease-in-out;
-}
-
-.location-input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
-}
-
-/* Location Suggestions Dropdown */
-#locationSuggestions {
-    position: absolute;
-    width: 100%;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-    display: none; /* Initially hidden */
-}
-
-/* Suggestion Items */
-.suggestion-item {
-    padding: 10px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background 0.3s;
-    border-bottom: 1px solid #eee;
-}
-
-.suggestion-item:last-child {
-    border-bottom: none;
-}
-
-/* Hover Effect */
-.suggestion-item:hover {
-    background: #f8f9fa;
-}
-
-/* Active Selection */
-.suggestion-item.active {
-    background: #007bff;
-    color: white;
-}
-
-/* Header row for user list */
-/* User List Header */
-.user-list-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f8f9fa;
-    font-weight: bold;
-    padding: 12px 10px;
-    border-bottom: 2px solid #ccc;
-}
-
-/* Header items aligned with the user list */
-.header-item {
-    flex: 1;
-    text-align: left;
-    padding-left: 10px;
-}
-
-/* Ensure header and list items align */
-.user-info {
-    flex: 1;
-}
-
-.user-location {
-    flex: 1;
-}
-
-.manage-btn {
-    text-align: right;
-    flex: 1;
-}
-
-
-
-  </style>
+  <meta charset="UTF-8">
+  <title>User List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-  
-  <div class="container mt-4">
-    <h2 class="text-center mb-4">User Management</h2>
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#userModal"
-      onclick="openCreateModal()">Add User</button>
+  <div class="container mt-5">
+    <h1>User List</h1>
 
-      <!-- Display user in good alignment -->
-  
-    <div class="user-list-container">
-      <!-- Header Row -->
-      <div class="user-list-header">
-        <div class="header-item">Full Names</div>
-        <div class="header-item">Location</div>
-        <div class="header-item">Action</div>
-      </div>
-    
-      <ul class="list-unstyled">
+    <!-- Add User Button -->
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#AddEditModal">
+      Add User
+    </button>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+          <th>Sex</th>
+          <th>User ID</th>
+          <th>Email</th>
+          <th>Country</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for user in users %}
-        <li class="user-list-item">
-          <!-- User Info -->
-          <div class="user-info">
-            <img
-              src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}/media/profile_pics/default_profile.png{% endif %}"
-              alt="User">
-            <div class="user-details">
-              <h6 class="mb-0 fw-bold">{{ user.first_name }} {{ user.last_name }}</h6>
-              <p class="text-muted mb-0" style="font-size: 0.85rem;">{{ user.email }}</p>
-            </div>
-          </div>
-    
-          <!-- Location -->
-          <div class="user-location">
-            <p class="text-muted mb-0 fw-semibold">{{ user.location.name }}</p>
-          </div>
-    
-          <!-- Manage Button -->
-          <div class="manage-btn">
-            <div class="btn-group">
-              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
-                data-bs-toggle="dropdown">Manage</button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#userModal"
-                    onclick="openEditModal('{{ user.id }}', '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}', '{{ user.location.name }}')">Edit</a>
-                </li>
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                    onclick="openDeleteModal('{{ user.id }}')">Delete</a></li>
-              </ul>
-            </div>
-          </div>
-        </li>
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.first_name }} {{ user.last_name }}</td>
+          <td>{{ user.sex }}</td>
+          <td>{{ user.userid }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.country }}</td>
+          <td>
+            <a href="{% url 'user_detail' user.id %}" class="btn btn-info btn-sm">Details</a>
+            <!-- Trigger the modal -->
+            <a href="{% url 'user_update' user.pk %}" class="btn btn-warning btn-sm edit-user" data-bs-toggle="modal"
+              data-bs-target="#AddEditModal">Edit</a>
+            <form method="post" action="{% url 'user_delete' user.id %}" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </td>
+        </tr>
         {% endfor %}
-      </ul>
-    </div>
+      </tbody>
+    </table>
 
-
+    <!-- The modal content (the form) is in user_form.html -->
+    {% include 'users/user_form.html' %}
   </div>
 
-  <div class="modal fade" id="userModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle">Edit User</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="userForm" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="hidden" id="userId" name="user_id" />
-            <div class="mb-3">
-              <label for="first_name" class="form-label">First Name</label>
-              <input type="text" class="form-control" id="first_name" name="first_name" required />
-            </div>
-            <div class="mb-3">
-              <label for="last_name" class="form-label">Last Name</label>
-              <input type="text" class="form-control" id="last_name" name="last_name" required />
-            </div>
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required />
-            </div>
-            <div class="mb-3 position-relative">
-              <label for="locationInput" class="form-label fw-bold">Location</label>
-              <input type="text" class="form-control location-input" id="locationInput" name="location_name"
-                placeholder="Start typing a location...">
-              <div id="locationSuggestions" class="list-group shadow-sm"></div>
-            </div>
-
-            <div class="mb-3">
-              <label for="profile_picture" class="form-label">Profile Picture</label>
-              <input type="file" class="form-control" id="profile_picture" name="profile_picture" />
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Confirm Delete</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <p>Are you sure you want to delete this user?</p>
-        </div>
-        <div class="modal-footer">
-          <form id="deleteForm" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Delete</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function openCreateModal() {
-      document.getElementById("modalTitle").innerText = "Add User";
-      document.getElementById("userForm").action = "{% url 'user_create' %}";
-      document.getElementById("userId").value = "";
-      document.getElementById("first_name").value = "";
-      document.getElementById("last_name").value = "";
-      document.getElementById("email").value = "";
-      document.getElementById("locationInput").value = "";
-    }
-
-    function openEditModal(id, first_name, last_name, email, location) {
-      document.getElementById("modalTitle").innerText = "Edit User";
-      document.getElementById("userForm").action = `/update/${id}/`;
-      document.getElementById("userId").value = id;
-      document.getElementById("first_name").value = first_name;
-      document.getElementById("last_name").value = last_name;
-      document.getElementById("email").value = email;
-      document.getElementById("locationInput").value = location;
-    }
-    function openDeleteModal(id) {
-        document.getElementById("deleteForm").action = `/delete/${id}/`;
-      }
-
-      document.getElementById("locationInput").addEventListener("input", function () {
-          let query = this.value;
-          let suggestions = document.getElementById("locationSuggestions");
-
-          if (query.length > 2) {
-            fetch(`/search_location/?q=${query}`)
-              .then(response => response.json())
-              .then(data => {
-                suggestions.innerHTML = "";
-                suggestions.style.display = "block"; // Show dropdown
-
-                data.forEach(location => {
-                  let item = document.createElement("div");
-                  item.classList.add("suggestion-item");
-                  item.textContent = location.name;
-
-                  item.onclick = function () {
-                    document.getElementById("locationInput").value = location.name;
-                    suggestions.innerHTML = "";
-                    suggestions.style.display = "none"; // Hide dropdown
-                  };
-
-                  suggestions.appendChild(item);
-                });
-              });
-          } else {
-            suggestions.innerHTML = "";
-            suggestions.style.display = "none"; // Hide if query is too short
-          }
-        });
-
-        // Hide suggestions when clicking outside
-        document.addEventListener("click", function (event) {
-          if (!document.getElementById("locationInput").contains(event.target) &&
-            !document.getElementById("locationSuggestions").contains(event.target)) {
-            document.getElementById("locationSuggestions").style.display = "none";
-          }
-        });
-
-
-  </script>
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // JavaScript to trigger the modal for "Add" and "Edit"
+      $('#userModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var modal = $(this);
+        if (button.hasClass('edit-user')) {
+          modal.find('.modal-title').text('Edit User'); // Correct title
+          //May need to add JavaScript to populate the form fields, depends on form loading method
+        } else {
+          modal.find('.modal-title').text('Add New User');
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

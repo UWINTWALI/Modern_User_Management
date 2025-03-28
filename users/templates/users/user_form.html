@@ -1,48 +1,266 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Add/Edit User</title>
+    <title>{% if form.instance.pk %}Edit{% else %}Add{% endif %} User</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- js style files -->
+    <script src="{% static 'js/styles.js' %}"></script>
+    <script src="{% static 'js/userform.js' %}"></script>
+
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .hidden{
+            display: none;
+        }
+   
+    </style>
 </head>
 
 <body>
-    <h1>{% if form.instance.id %}Edit{% else %}Add{% endif %} User</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+    <div class="container mt-5">
 
-        <div class="mb-3">
-            <label for="locationInput" class="form-label">Location</label>
-            <input type="text" class="form-control" id="locationInput" name="location_name"
-                placeholder="Start typing a location..." />
-            <div id="locationSuggestions" class="list-group"></div>
+        <!-- Modal -->
+        <div class="modal fade" id="AddEditModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg-custom">
+                <div class="modal-content w-8">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userModalLabel">{% if form.instance.pk %}Edit{% else %}Add{% endif %} User
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" enctype="multipart/form-data" id="userForm">
+                            {% csrf_token %}
+
+                            <!-- PERSONAL INFORMATION SECTION -->
+                            <div class="personal-info-container">
+                                <h3>Personal Information</h3>
+                                <div class="personal-info-content">
+                                    <div class="mb-3">
+                                        {{ form.first_name }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ form.last_name }}
+                                    </div>
+                            
+                                    <div class="mb-3">
+                                        {{ form.userid }}
+                                    </div>
+                            
+                                    <div class="mb-3">
+                                        {{ form.email }}
+                                    </div>
+                            
+                                    <div class="mb-3">
+                                        <label class="form-label">Sex:</label>
+                                        {{ form.sex }}
+                                    </div>
+                            
+                                    <div class="mb-3">
+                                        <label class="form-label">Profile Picture:</label>
+                                        {{ form.profile_picture }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <div class="mb-3 form-check">
+                                {{ form.is_foreigner }}
+                                <label class="form-check-label" for="id_is_foreigner">Is a Foreigner?</label>
+                            </div>
+                            
+                            <!-- Foreign Location Field -->
+                            <div id="foreignLocationField"
+                            class="mb-3 {% if not form.instance.is_foreigner %}hidden{% endif %}">
+                            <label class="form-label">Foreign Location</label>
+                            {{ form.foreign_location }}
+                            </div>
+                            
+                            <!-- Local Location Fields -->
+                            <div id="localLocationFields" {% if form.instance.is_foreigner %}class="hidden" {% endif %}>
+                                <div class="residence-info-container">
+                                    <h3>Resisence Information</h3>
+                                    <div class="residence-info-content">
+                                        <div class="mb-3">
+                                            <label class="form-label">Country</label>
+                                            {{ form.country }}
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Province</label>
+                                            {{ form.province }}
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">District</label>
+                                            {{ form.district }}
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Sector</label>
+                                            {{ form.sector }}
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Cell</label>
+                                            {{ form.cell }}
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Village</label>
+                                            {{ form.village }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <button type="submit">Save</button>
-    </form>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        document.getElementById("locationInput").addEventListener("input", function () {
-            let query = this.value;
-            if (query.length > 2) {
-                fetch(`/search_location/?q=${query}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        let suggestions = document.getElementById("locationSuggestions");
-                        suggestions.innerHTML = "";
-                        data.forEach(location => {
-                            let item = document.createElement("a");
-                            item.classList.add("list-group-item", "list-group-item-action");
-                            item.textContent = location.name;
-                            item.onclick = function () {
-                                document.getElementById("locationInput").value = location.name;
-                                suggestions.innerHTML = "";
-                            };
-                            suggestions.appendChild(item);
-                        });
-                    });
+        $(document).ready(function () {
+            // Function to toggle visibility of location fields
+            function toggleLocationFields() {
+                if ($('#id_is_foreigner').is(':checked')) {
+                    $('#foreignLocationField').removeClass('hidden');
+                    $('#localLocationFields').addClass('hidden');
+                } else {
+                    $('#foreignLocationField').addClass('hidden');
+                    $('#localLocationFields').removeClass('hidden');
+                }
             }
+
+            // Initial call to set visibility on page load
+            toggleLocationFields();
+
+            // Bind change event to 'is_foreigner' checkbox
+            $('#id_is_foreigner').change(function () {
+                toggleLocationFields();
+            });
+
+            // Dependent dropdown functionality
+            $('#id_country').change(function () {
+                var countryId = $(this).val();
+                if (countryId) {
+                    $.ajax({
+                        url: '/get_provinces/' + countryId + '/',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            var provinceSelect = $('#id_province');
+                            provinceSelect.empty();
+                            provinceSelect.append($('<option>').text('---------').attr('value', '')); // Add default empty option
+
+                            $.each(data.provinces, function (key, value) {
+                                provinceSelect.append($('<option>').text(value.name).attr('value', value.id));
+                            });
+                        }
+                    });
+                } else {
+                    $('#id_province').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_district').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_sector').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_cell').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
+                }
+            });
+
+            $('#id_province').change(function () {
+                var provinceId = $(this).val();
+                if (provinceId) {
+                    $.ajax({
+                        url: '/get_districts/' + provinceId + '/',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            var districtSelect = $('#id_district');
+                            districtSelect.empty();
+                            districtSelect.append($('<option>').text('---------').attr('value', ''));
+                            $.each(data.districts, function (key, value) {
+                                districtSelect.append($('<option>').text(value.name).attr('value', value.id));
+                            });
+                        }
+                    });
+                } else {
+                    $('#id_district').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_sector').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_cell').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
+                }
+            });
+
+            $('#id_district').change(function () {
+                var districtId = $(this).val();
+                if (districtId) {
+                    $.ajax({
+                        url: '/get_sectors/' + districtId + '/',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            var sectorSelect = $('#id_sector');
+                            sectorSelect.empty();
+                            sectorSelect.append($('<option>').text('---------').attr('value', ''));
+                            $.each(data.sectors, function (key, value) {
+                                sectorSelect.append($('<option>').text(value.name).attr('value', value.id));
+                            });
+                        }
+                    });
+                } else {
+                    $('#id_sector').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_cell').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
+                }
+            });
+
+            $('#id_sector').change(function () {
+                var sectorId = $(this).val();
+                if (sectorId) {
+                    $.ajax({
+                        url: '/get_cells/' + sectorId + '/',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            var cellSelect = $('#id_cell');
+                            cellSelect.empty();
+                            cellSelect.append($('<option>').text('---------').attr('value', ''));
+                            $.each(data.cells, function (key, value) {
+                                cellSelect.append($('<option>').text(value.name).attr('value', value.id));
+                            });
+                        }
+                    });
+                } else {
+                    $('#id_cell').empty().append($('<option>').text('---------').attr('value', ''));
+                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
+                }
+            });
+
+            $('#id_cell').change(function () {
+                var cellId = $(this).val();
+                if (cellId) {
+                    $.ajax({
+                        url: '/get_villages/' + cellId + '/',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            var villageSelect = $('#id_village');
+                            villageSelect.empty();
+                            villageSelect.append($('<option>').text('---------').attr('value', ''));
+                            $.each(data.villages, function (key, value) {
+                                villageSelect.append($('<option>').text(value.name).attr('value', value.id));
+                            });
+                        }
+                    });
+                } else {
+                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
+                }
+            });
         });
     </script>
 </body>

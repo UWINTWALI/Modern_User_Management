@@ -1,0 +1,122 @@
+:root {
+    /* Color Palette */
+    --primary-color: #2D3748;
+    /* Dark Grayish Blue */
+    --secondary-color: #4A90E2;
+    /* Soft Blue */
+    --accent-color: #E2E8F0;
+    /* Light Gray */
+    --background-color: #F7FAFC;
+    /* Very Light Gray */
+    --text-color: #1A202C;
+    /* Dark Gray */
+    --border-color: #E2E8F0;
+    /* Light Border Color */
+    --error-color: #F56565;
+    /* Light Red for errors */
+
+    /* Typography Sizes */
+    --font-size-small: 0.875rem;
+    /* 14px */
+    --font-size-medium: 1rem;
+    /* 16px */
+    --font-size-large: 1.25rem;
+    /* 20px */
+    --font-size-xlarge: 1.5rem;
+    /* 24px */
+    --font-size-xxlarge: 2rem;
+    /* 32px */
+
+    /* Spacing Sizes */
+    --spacing-xs: 0.5rem;
+    /* 8px */
+    --spacing-sm: 1rem;
+    /* 16px */
+    --spacing-md: 1.5rem;
+    /* 24px */
+    --spacing-lg: 2rem;
+    /* 32px */
+    --spacing-xl: 3rem;
+    /* 48px */
+
+    /* Border Radius */
+    --border-radius-small: 4px;
+    --border-radius-medium: 8px;
+    --border-radius-large: 16px;
+}
+
+/* Universal reset for all elements */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    /* Ensures that padding and borders don't affect the element's width/height */
+    margin: 0;
+    /* Removes default margin */
+    padding: 0;
+    /* Removes default padding */
+    font-family: 'Arial', sans-serif;
+    /* Sets a clean, minimalist font */
+    color: inherit;
+    /* Inherit text color from parent */
+    text-decoration: none;
+    /* Removes text decorations like underlines */
+    list-style: none;
+    /* Removes bullet points from lists */
+}
+
+.hidden {
+    display: none;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: var(--font-size-medium);
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+}
+
+/ .modal-dialog.modal-lg-custom {
+    max-width: 80%;
+}
+
+/* Container for the form fields, use Flexbox to arrange items */
+.personal-info-content,
+.residence-info-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    /* Space between the fields */
+}
+
+/* Each field container will take up 48% of the available width */
+.personal-info-content .mb-3,
+.residence-info-content .mb-3 {
+    flex: 1 1 48%;
+    min-width: 200px;
+    /* Ensure the fields don't shrink too small */
+}
+
+/* Ensuring the form fields are nicely aligned */
+form .form-label {
+    font-weight: bold;
+}
+
+/* Customize modal content padding */
+.modal-content {
+    padding: 20px;
+}
+
+/* Hide the foreign location field if it's not applicable */
+.hidden {
+    display: none;
+}
+
+/* Customize modal size */
+.modal-lg-custom {
+    max-width: 80%;
+    /* Adjust modal size */
+}
