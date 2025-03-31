@@ -86,182 +86,146 @@
                                     <h3>Resisence Information</h3>
                                     <div class="residence-info-content">
                                         <div class="mb-3">
-                                            <label class="form-label">Country</label>
+                                            <label class="form-label" for="id_country"></label>                                            
                                             {{ form.country }}
                                         </div>
+                                        
                                         <div class="mb-3">
-                                            <label class="form-label">Province</label>
+                                            <label class="form-label" for="id_province"></label>
                                             {{ form.province }}
                                         </div>
+                                        
                                         <div class="mb-3">
-                                            <label class="form-label">District</label>
+                                            <label class="form-label" for="id_district"></label>
                                             {{ form.district }}
                                         </div>
+                                        
                                         <div class="mb-3">
-                                            <label class="form-label">Sector</label>
+                                            <label class="form-label" for="id_sector"></label>
                                             {{ form.sector }}
                                         </div>
+                                        
                                         <div class="mb-3">
-                                            <label class="form-label">Cell</label>
+                                            <label class="form-label" for="id_cell"></label>
                                             {{ form.cell }}
                                         </div>
+                                        
                                         <div class="mb-3">
-                                            <label class="form-label">Village</label>
+                                            <label class="form-label" for="id_village"></label>
                                             {{ form.village }}
                                         </div>
+                                        
                                     </div>
                                 </div>
-                            </div>
-        
+                            </div>        
                             <button type="submit" class="btn btn-primary">Save</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // Function to toggle visibility of location fields
-            function toggleLocationFields() {
-                if ($('#id_is_foreigner').is(':checked')) {
-                    $('#foreignLocationField').removeClass('hidden');
-                    $('#localLocationFields').addClass('hidden');
-                } else {
-                    $('#foreignLocationField').addClass('hidden');
-                    $('#localLocationFields').removeClass('hidden');
-                }
-            }
 
-            // Initial call to set visibility on page load
-            toggleLocationFields();
+    // INsert JS for selecting the location____________________________________________________________________________
+    function populateDropdown(selectElement, options) {
+    selectElement.innerHTML = '<option value="">Select</option>';
+    options.forEach(option => {
+      const opt = document.createElement('option');
+      opt.value = option;
+      opt.textContent = option;
+      selectElement.appendChild(opt);
+    });
+  }
 
-            // Bind change event to 'is_foreigner' checkbox
-            $('#id_is_foreigner').change(function () {
-                toggleLocationFields();
-            });
+  document.addEventListener("DOMContentLoaded", function() {
+    const countrySelect = document.getElementById("id_country");
+    const provinceSelect = document.getElementById("id_province");
+    const districtSelect = document.getElementById("id_district");
+    const sectorSelect = document.getElementById("id_sector");
+    const cellSelect = document.getElementById("id_cell");
+    const villageSelect = document.getElementById("id_village");
 
-            // Dependent dropdown functionality
-            $('#id_country').change(function () {
-                var countryId = $(this).val();
-                if (countryId) {
-                    $.ajax({
-                        url: '/get_provinces/' + countryId + '/',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function (data) {
-                            var provinceSelect = $('#id_province');
-                            provinceSelect.empty();
-                            provinceSelect.append($('<option>').text('---------').attr('value', '')); // Add default empty option
+    // Load JSON data from file
+    fetch("{% static 'json/rwanda_geo.json' %}") 
+      .then(response => response.json())
+      .then(data => {
+        const locationMap = data;
 
-                            $.each(data.provinces, function (key, value) {
-                                provinceSelect.append($('<option>').text(value.name).attr('value', value.id));
-                            });
-                        }
-                    });
-                } else {
-                    $('#id_province').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_district').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_sector').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_cell').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
-                }
-            });
+        // Populate the Country dropdown
+        populateDropdown(countrySelect, Object.keys(locationMap));
 
-            $('#id_province').change(function () {
-                var provinceId = $(this).val();
-                if (provinceId) {
-                    $.ajax({
-                        url: '/get_districts/' + provinceId + '/',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function (data) {
-                            var districtSelect = $('#id_district');
-                            districtSelect.empty();
-                            districtSelect.append($('<option>').text('---------').attr('value', ''));
-                            $.each(data.districts, function (key, value) {
-                                districtSelect.append($('<option>').text(value.name).attr('value', value.id));
-                            });
-                        }
-                    });
-                } else {
-                    $('#id_district').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_sector').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_cell').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
-                }
-            });
-
-            $('#id_district').change(function () {
-                var districtId = $(this).val();
-                if (districtId) {
-                    $.ajax({
-                        url: '/get_sectors/' + districtId + '/',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function (data) {
-                            var sectorSelect = $('#id_sector');
-                            sectorSelect.empty();
-                            sectorSelect.append($('<option>').text('---------').attr('value', ''));
-                            $.each(data.sectors, function (key, value) {
-                                sectorSelect.append($('<option>').text(value.name).attr('value', value.id));
-                            });
-                        }
-                    });
-                } else {
-                    $('#id_sector').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_cell').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
-                }
-            });
-
-            $('#id_sector').change(function () {
-                var sectorId = $(this).val();
-                if (sectorId) {
-                    $.ajax({
-                        url: '/get_cells/' + sectorId + '/',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function (data) {
-                            var cellSelect = $('#id_cell');
-                            cellSelect.empty();
-                            cellSelect.append($('<option>').text('---------').attr('value', ''));
-                            $.each(data.cells, function (key, value) {
-                                cellSelect.append($('<option>').text(value.name).attr('value', value.id));
-                            });
-                        }
-                    });
-                } else {
-                    $('#id_cell').empty().append($('<option>').text('---------').attr('value', ''));
-                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
-                }
-            });
-
-            $('#id_cell').change(function () {
-                var cellId = $(this).val();
-                if (cellId) {
-                    $.ajax({
-                        url: '/get_villages/' + cellId + '/',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function (data) {
-                            var villageSelect = $('#id_village');
-                            villageSelect.empty();
-                            villageSelect.append($('<option>').text('---------').attr('value', ''));
-                            $.each(data.villages, function (key, value) {
-                                villageSelect.append($('<option>').text(value.name).attr('value', value.id));
-                            });
-                        }
-                    });
-                } else {
-                    $('#id_village').empty().append($('<option>').text('---------').attr('value', ''));
-                }
-            });
+        countrySelect.addEventListener("change", function() {
+          // Populate the Province dropdown based on the selected country
+          const countryValue = this.value;
+          if (countryValue) {
+            populateDropdown(provinceSelect, Object.keys(locationMap[countryValue]));
+          } else {
+            populateDropdown(provinceSelect, []);
+          }
+        //   districtSelect.innerHTML = sectorSelect.innerHTML = cellSelect.innerHTML = villageSelect.innerHTML = '<option value="">Select</option>';
         });
+
+        provinceSelect.addEventListener("change", function() {
+          // Populate the District dropdown based on the selected province
+          const countryValue = countrySelect.value;
+          const provinceValue = this.value;
+          if (provinceValue) {
+            populateDropdown(districtSelect, Object.keys(locationMap[countryValue][provinceValue]));
+          } else {
+            populateDropdown(districtSelect, []);
+          }
+        //   sectorSelect.innerHTML = cellSelect.innerHTML = villageSelect.innerHTML = '<option value="">Select</option>';
+        });
+
+        districtSelect.addEventListener("change", function() {
+          // Populate the Sector dropdown based on the selected district
+          const countryValue = countrySelect.value;
+          const provinceValue = provinceSelect.value;
+          const districtValue = this.value;
+          if (districtValue) {
+            populateDropdown(sectorSelect, Object.keys(locationMap[countryValue][provinceValue][districtValue]));
+          } else {
+            populateDropdown(sectorSelect, []);
+          }
+        //   cellSelect.innerHTML = villageSelect.innerHTML = '<option value="">Select</option>';
+        });
+
+        sectorSelect.addEventListener("change", function() {
+          // Populate the Cell dropdown based on the selected sector
+          const countryValue = countrySelect.value;
+          const provinceValue = provinceSelect.value;
+          const districtValue = districtSelect.value;
+          const sectorValue = this.value;
+          if (sectorValue) {
+            populateDropdown(cellSelect, Object.keys(locationMap[countryValue][provinceValue][districtValue][sectorValue]));
+          } else {
+            populateDropdown(cellSelect, []);
+          }
+        //   villageSelect.innerHTML = '<option value="">Select</option>';
+        });
+
+        cellSelect.addEventListener("change", function() {
+          // Populate the Village dropdown based on the selected cell
+          const countryValue = countrySelect.value;
+          const provinceValue = provinceSelect.value;
+          const districtValue = districtSelect.value;
+          const sectorValue = sectorSelect.value;
+          const cellValue = this.value;
+          if (cellValue) {
+            const villages = locationMap[countryValue][provinceValue][districtValue][sectorValue][cellValue];
+            populateDropdown(villageSelect, villages || []);
+          } else {
+            populateDropdown(villageSelect, []);
+          }
+         });
+        })
+        .catch(error => console.error('Error loading JSON:', error));
+    });
+
+
+        // END of selection js_____________________________________________________________________________________________        
     </script>
 </body>
 

@@ -10,13 +10,7 @@ urlpatterns = [
     path('delete/<int:user_id>/', views.user_delete, name='user_delete'),
     path('details/<int:user_id>/', views.user_detail, name='user_detail'),
     path('search_location/', views.search_location, name='search_location'), 
-    
-    # dependent inputs for location selections
-    
-    path('get_provinces/<int:country_id>/', views.get_provinces, name='get_provinces'),
-    path('get_districts/<int:province_id>/', views.get_districts, name='get_districts'),
-    path('get_sectors/<int:district_id>/', views.get_sectors, name='get_sectors'),
-    path('get_cells/<int:sector_id>/', views.get_cells, name='get_cells'),
+
 ]
 
 if settings.DEBUG:

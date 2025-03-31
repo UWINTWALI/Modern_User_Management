@@ -1,9 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Province, District, Sector, Cell, Village, User
+from .models import  User, ForeignerLocation
 from .forms import UserForm
 from django.http import JsonResponse
 from django.urls import reverse
 from django.contrib import messages
+
+import os
+import json
+from django.conf import settings
+from .models import UserLocation
+
+
+
 
 
 def user_list(request):
@@ -31,11 +39,6 @@ from django.urls import reverse_lazy
 
 
 
-class UserCreateView(CreateView):
-    model = User
-    form_class = UserForm
-    template_name = "user_form.html"
-    success_url = reverse_lazy("user_list")  # Redirect after success
 
 
 
@@ -67,36 +70,14 @@ def user_detail(request, pk):
     return render(request, 'users/user_detail.html', {'user': user})
 
 
-def get_provinces(request, country_id):
-    provinces = Province.objects.filter(country_id=country_id).values('id', 'name')
-    return JsonResponse({'provinces': list(provinces)})
-
-def get_districts(request, province_id):
-    districts = District.objects.filter(province_id=province_id).values('id', 'name')
-    return JsonResponse({'districts': list(districts)})
-
-def get_sectors(request, district_id):
-    sectors = Sector.objects.filter(district_id=district_id).values('id', 'name')
-    return JsonResponse({'sectors': list(sectors)})
-
-def get_cells(request, sector_id):
-    cells = Cell.objects.filter(sector_id=sector_id).values('id', 'name')
-    return JsonResponse({'cells': list(cells)})
-
-def get_villages(request, cell_id):
-    villages = Village.objects.filter(cell_id=cell_id).values('id', 'name')
-    return JsonResponse({'villages': list(villages)})
-
-
-
 
 def search_location(request):
     if request.method == 'GET':
         query = request.GET.get('query')
         if query:
             # Example: Searching for provinces by name
-            provinces = Province.objects.filter(name__icontains=query).values('id', 'name')
+            provinces = UserLocation.objects.filter(name__icontains=query).values('id', 'name')
             return JsonResponse(list(provinces), safe=False)
         else:
             return JsonResponse({"error": "No query provided"}, status=400)
-    return redirect('home')  # Redirect to home or another appropriate page
+    return redirect('user_list')  

@@ -4,79 +4,20 @@ import os
 from django.conf import settings
 
 
-"""Model for Local User Location"""
-class Country(models.Model):
-    name = models.CharField(max_length=100)
-
-    def save(self, *args, **kwargs):
-        """Store name in lowercase"""
-        self.name = self.name.lower() 
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        """Display with the first letter uppercase"""
-        return self.name.capitalize()  
-
-
-class Province(models.Model):
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-
-    def save(self, *args, **kwargs):
-        self.name = self.name.lower() 
-        super().save(*args, **kwargs)
+"""Model for Local User Location___________________________________________________________________________________"""
+class UserLocation(models.Model):
+    country = models.CharField(max_length=100)
+    province = models.CharField(max_length=100)
+    district = models.CharField(max_length=100)
+    sector = models.CharField(max_length=100)
+    cell = models.CharField(max_length=100)
+    village = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.name.capitalize() 
+        return f"{self.village}, {self.cell}, {self.sector}, {self.district}, {self.province}, {self.country}"
+    
 
-
-class District(models.Model):
-    province = models.ForeignKey(Province, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-
-    def save(self, *args, **kwargs):
-        self.name = self.name.lower() 
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name.capitalize() 
-
-
-class Sector(models.Model):
-    district = models.ForeignKey(District, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-
-    def save(self, *args, **kwargs):
-        self.name = self.name.lower()  
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name.capitalize() 
-
-
-class Cell(models.Model):
-    sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-
-    def save(self, *args, **kwargs):
-        self.name = self.name.lower()  
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name.capitalize() 
-
-class Village(models.Model):
-    cell = models.ForeignKey(Cell, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-
-    def save(self, *args, **kwargs):
-        self.name = self.name.lower() 
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name.capitalize() 
-
-"""Model for Foreigner User Location"""
+"""Model for Foreigner User Location_________________________________________________________________________________"""
 class ForeignerLocation(models.Model):
     """ e.g., "Anytown, CA 91234, USA """
     location = models.CharField(max_length=255)  
@@ -90,7 +31,8 @@ class ForeignerLocation(models.Model):
 
 
 
-# User Model
+
+"""User Model___________________________________________________________________________________________________________"""
 def get_default_profile_pic():
     return os.path.join('profile_pics', 'default_profile.png')
 
@@ -114,25 +56,13 @@ class User(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pics/',null=True, blank=True,default=get_default_profile_pic)
 
     # Location fields
+    date_of_birth = models.DateField()
+    location = models.ForeignKey(UserLocation, on_delete=models.CASCADE, null=True, blank=True)
+
     is_foreigner = models.BooleanField(default=False)
-    country = models.ForeignKey('Country', on_delete=models.SET_NULL, null=True, blank=True)
-    province = models.ForeignKey('Province', on_delete=models.SET_NULL, null=True, blank=True)
-    district = models.ForeignKey('District', on_delete=models.SET_NULL, null=True, blank=True)
-    sector = models.ForeignKey('Sector', on_delete=models.SET_NULL, null=True, blank=True)
-    cell = models.ForeignKey('Cell', on_delete=models.SET_NULL, null=True, blank=True)
-    village = models.ForeignKey('Village', on_delete=models.SET_NULL, null=True, blank=True)
     foreign_location = models.CharField(max_length=255, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        if self.is_foreigner:
-            self.province = None
-            self.district = None
-            self.sector = None
-            self.cell = None
-            self.village = None
-        else:
-            self.foreign_location = None
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+

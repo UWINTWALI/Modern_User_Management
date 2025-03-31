@@ -36,7 +36,7 @@
           <td>{{ user.sex }}</td>
           <td>{{ user.userid }}</td>
           <td>{{ user.email }}</td>
-          <td>{{ user.country }}</td>
+          <td>{{ user.location }}</td>
           <td>
             <a href="{% url 'user_detail' user.id %}" class="btn btn-info btn-sm">Details</a>
             <!-- Trigger the modal -->
@@ -52,7 +52,7 @@
       </tbody>
     </table>
 
-    <!-- The modal content (the form) is in user_form.html -->
+    <!-- The modal content /form is in user_form.html -->
     {% include 'users/user_form.html' %}
   </div>
 
@@ -73,8 +73,7 @@
         var button = $(event.relatedTarget); // Button that triggered the modal
         var modal = $(this);
         if (button.hasClass('edit-user')) {
-          modal.find('.modal-title').text('Edit User'); // Correct title
-          //May need to add JavaScript to populate the form fields, depends on form loading method
+          modal.find('.modal-title').text('Edit User'); 
         } else {
           modal.find('.modal-title').text('Add New User');
         }
