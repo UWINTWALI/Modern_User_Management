@@ -66,29 +66,30 @@ WSGI_APPLICATION = 'user_management.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
-# import os
-# from dotenv import load_dotenv
-# # Load environment variables from .env file
-# load_dotenv()
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('DATABASE_NAME'),
-#         'USER': os.getenv('DATABASE_USER'),
-#         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-#         'HOST': os.getenv('DATABASE_HOST'),
-#         'PORT': os.getenv('DATABASE_PORT'),
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+
+
+import os
+from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv()
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
+    }
+}
 
 
 
@@ -138,7 +139,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # In case you're using custom directories for static files (like in development)
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Ensure this includes the correct path to your 'static' folder
+    BASE_DIR / "static",
 ]
 
 

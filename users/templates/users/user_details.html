@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.first_name }}'s Details</title>
+    <script src="{% static 'js/userDetail.js' %}"></script>
+</head>
+<body>
+
+    <div id="user-container">
+        <!-- Left: Profile Section -->
+        <div id="user-profile">
+            <img id="user-img" src="{{ user.profile_picture.url }}" alt="Profile Picture">
+            <h3 id="user-name">{{ user.first_name }} {{ user.last_name }}</h3>
+            <p id="user-id">User ID: {{ user.userid }}</p>
+        </div>
+
+        <!-- Right poition: User Details -->
+        <div id="user-details">
+            <ul>
+                <li><strong>Sex:</strong> {{ user.get_sex_display }}</li>
+                <li><strong>Phone:</strong> {{ user.phone }}</li>
+                <li><strong>Email:</strong> {{ user.email }}</li>
+                <li><strong>Foreigner:</strong> {{ user.is_foreigner|yesno:"Yes,No" }}</li>
+                <li><strong>Location:</strong> 
+                    {% if user.is_foreigner %}
+                        {{ user.foreign_location }}
+                    {% else %}
+                        <ul id="local-location">
+                            <li><strong>Country:</strong> {{ user.location.country }}</li>
+                            <li><strong>Province:</strong> {{ user.location.province }}</li>
+                            <li><strong>District:</strong> {{ user.location.district }}</li>
+                            <li><strong>Sector:</strong> {{ user.location.sector }}</li>
+                            <li><strong>Cell:</strong> {{ user.location.cell }}</li>
+                            <li><strong>Village:</strong> {{ user.location.village }}</li>
+                        </ul>
+                    {% endif %}
+                </li>
+            </ul>
+            <a href="{% url 'user_create' %}" class="back-btn">Back to User</a>
+        </div>
+    </div>
+
+</body>
+</html>

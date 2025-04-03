@@ -13,16 +13,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Apply body styles
-    document.body.style.backgroundColor = "var(--background-color)";
-    document.body.style.color = "var(--text-color)";
-    document.body.style.fontFamily = "'Arial', sans-serif";
-    document.body.style.fontSize = "var(--font-size-medium)";
-    document.body.style.lineHeight = "1.5";
-    document.body.style.margin = "0";
-    document.body.style.padding = "0";
+    // document.body.style.backgroundColor = "var(--background-color)";
+    // document.body.style.color = "var(--text-color)";
+    // document.body.style.fontFamily = "'Arial', sans-serif";
+    // document.body.style.fontSize = "var(--font-size-medium)";
+    // document.body.style.lineHeight = "1.5";
+    // document.body.style.margin = "0";
+    // document.body.style.padding = "0";
 
     // Apply styles to personal info and residence info sections
-    document.querySelectorAll(".personal-info-content, .residence-info-content").forEach(section => {
+    document.querySelectorAll(".personal-info-content, .residence-info-content, .foreigner-residence-content").forEach(section => {
         section.style.display = "grid";
         section.style.gridTemplateColumns = "repeat(2, 1fr)";
         section.style.gap = "20px";

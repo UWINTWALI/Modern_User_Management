@@ -4,10 +4,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{% if form.instance.pk %}Edit{% else %}Add{% endif %} User</title>
+    <title>{% if user_form.instance.pk %}Edit{% else %}Add{% endif %} User</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- js style files -->
-    <script src="{% static 'js/styles.js' %}"></script>
     <script src="{% static 'js/userform.js' %}"></script>
 
 
@@ -16,216 +15,382 @@
         .hidden{
             display: none;
         }
-   
+        th {
+          font-size: 18px;
+        }
+
     </style>
 </head>
 
 <body>
-    <div class="container mt-5">
 
+  <div class="container mt-4">
+    <h2 class="text-center mb-4">User Management Portal <h2>
+    
+    <!-- Add User Button -->
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#AddEditModal" onclick="openCreateModal()">
+      Add User
+    </button>
+
+
+
+
+    <table class="table">
+      <thead>
+          <tr>
+            <th>Profile</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Sex</th>
+            <th>User ID</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Location</th>
+            <th>Details</th>
+          </tr>
+      </thead>
+
+      <tbody>
+          {% for user in users %}
+          <tr>
+            <td><img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}/media/profile_pics/default_profile.png{% endif %}" 
+              alt="User" class="rounded-circle" width="50" height="50"/></td>
+              <td><h6 class="mb-0">{{ user.first_name }}</h6></td>
+              <td><h6 class="mb-0">{{ user.last_name }}</h6></td>
+              <td><h6 class="mb-0">{{ user.sex }}</h6></td>
+              <td><h6 class="mb-0">{{ user.userid }}</h6></td>
+              <td><h6 class="mb-0">{{ user.phone }}</h6></td>
+              <td><h6 class="mb-0">{{ user.email }}</h6></td>
+              <td><h6>{% if user.is_foreigner %}{{ user.foreign_location }}{% else %}{{user.location.country}}-{{user.location.district}}{% endif %}</h6></td> 
+              <td><h6>
+                <a href="{% url 'detail_user' user.userid %}" class="btn btn-info btn-sm">More</a>
+              </h6></td>           
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+
+
+<!-- End of user_________________________________________ -->
+    <div class="container mt-5">
         <!-- Modal -->
         <div class="modal fade" id="AddEditModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg-custom">
                 <div class="modal-content w-8">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="userModalLabel">{% if form.instance.pk %}Edit{% else %}Add{% endif %} User
+                        <h5 class="modal-title" id="userModalLabel">{% if user_form.instance.pk %}Edit{% else %}Add{% endif %} User
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" enctype="multipart/form-data" id="userForm">
+                      <form method="post" enctype="multipart/form-data" id="userForm" action="{% if user_id %}{% url 'user_edit' user_id %}{% else %}{% url 'user_create' %}{% endif %}">
                             {% csrf_token %}
 
                             <!-- PERSONAL INFORMATION SECTION -->
                             <div class="personal-info-container">
                                 <h3>Personal Information</h3>
                                 <div class="personal-info-content">
+
+
                                     <div class="mb-3">
-                                        {{ form.first_name }}
+                                      <label class="form-label" for="first_name"></label>
+                                        {{ user_form.first_name }}
                                     </div>
+
+
                                     <div class="mb-3">
-                                        {{ form.last_name }}
+                                      <label class="form-label" for="last_name"></label>
+                                        {{ user_form.last_name }}
                                     </div>
-                            
+
                                     <div class="mb-3">
-                                        {{ form.userid }}
+                                      <label class="form-label" for="userid"></label>
+                                        {{ user_form.userid }}
                                     </div>
-                            
+
+                                    
                                     <div class="mb-3">
-                                        {{ form.email }}
+                                      <label class="form-label" for="sex">Sex:</label>
+                                      {{ user_form.sex }}
                                     </div>
-                            
+                                    
                                     <div class="mb-3">
-                                        <label class="form-label">Sex:</label>
-                                        {{ form.sex }}
+                                      <label class="form-label" for="phone"></label>
+                                      {{ user_form.phone }}
                                     </div>
-                            
+                                    
                                     <div class="mb-3">
-                                        <label class="form-label">Profile Picture:</label>
-                                        {{ form.profile_picture }}
+                                      <label class="form-label" for="email"></label>
+                                        {{ user_form.email }}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label" for="profile_picture" >Profile Picture:</label>
+                                        {{ user_form.profile_picture }}
                                     </div>
                                 </div>
                             </div>
 
-                            
-                            <div class="mb-3 form-check">
-                                {{ form.is_foreigner }}
-                                <label class="form-check-label" for="id_is_foreigner">Is a Foreigner?</label>
+
+
+
+                            <div class="foreigner-residence-container">
+                              <div class="foreigner-residence-content">
+
+                                <!-- Foreign check box --------------------------------------------------------------------------------------------->
+                                <div class="mb-3 form-check">
+                                  <label class="form-check-label" for="id_is_foreigner">Is a Foreigner?</label>
+                                  {{ user_form.is_foreigner }}
+                                </div>
+
+
+                                <!-- Foreign Location --------------------------------------------------------------------------------------------->
+                                <div id="foreignLocationField" class="mb-3 {% if not user_form.instance.is_foreigner %}hidden{% endif %}">
+                                  <div class="mb-3">
+                                    <label for="locationInput" class="form-label"></label>
+                                    {{ foreigner_form.foreign_location }}
+                                    <div id="locationSuggestions" class="list-group shadow-sm"></div>
+                                  </div>
+                                </div>
+
+                              </div>
                             </div>
-                            
-                            <!-- Foreign Location Field -->
-                            <div id="foreignLocationField"
-                            class="mb-3 {% if not form.instance.is_foreigner %}hidden{% endif %}">
-                            <label class="form-label">Foreign Location</label>
-                            {{ form.foreign_location }}
-                            </div>
-                            
-                            <!-- Local Location Fields -->
-                            <div id="localLocationFields" {% if form.instance.is_foreigner %}class="hidden" {% endif %}>
+
+
+
+                            <!-- Local Location Fields --------------------------------------------------------------------------------------->
+                            <div id="localLocationFields" {% if user_form.instance.is_foreigner %}class="hidden" {% endif %}>
                                 <div class="residence-info-container">
                                     <h3>Resisence Information</h3>
                                     <div class="residence-info-content">
+
                                         <div class="mb-3">
-                                            <label class="form-label" for="id_country"></label>                                            
-                                            {{ form.country }}
+                                          <label class="form-label" for="id_country"></label>
+                                          {{ location_form.country }}
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label class="form-label" for="id_province"></label>
-                                            {{ form.province }}
+                                            {{ location_form.province }}
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label class="form-label" for="id_district"></label>
-                                            {{ form.district }}
+                                            {{ location_form.district }}
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label class="form-label" for="id_sector"></label>
-                                            {{ form.sector }}
+                                            {{ location_form.sector }}
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label class="form-label" for="id_cell"></label>
-                                            {{ form.cell }}
+                                            {{ location_form.cell }}
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label class="form-label" for="id_village"></label>
-                                            {{ form.village }}
+                                            {{ location_form.village }}
                                         </div>
-                                        
+
                                     </div>
                                 </div>
-                            </div>        
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button type="submit" class="btn btn-primary">Save</button>
+                          </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <script>
 
     // INsert JS for selecting the location____________________________________________________________________________
-    function populateDropdown(selectElement, options) {
-    selectElement.innerHTML = '<option value="">Select</option>';
-    options.forEach(option => {
-      const opt = document.createElement('option');
-      opt.value = option;
-      opt.textContent = option;
-      selectElement.appendChild(opt);
+  
+  function populateDropdown(inputElement, values) {
+    // Create a new select element
+    const select = document.createElement("select");
+    select.className = inputElement.className; // Preserve the original class
+    select.id = inputElement.id; // Preserve the original ID
+    select.name = inputElement.name;
+
+    // Default placeholder option
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = inputElement.placeholder || "Select an option";
+    select.appendChild(defaultOption);
+
+    // Populate with new values
+    values.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
     });
-  }
 
-  document.addEventListener("DOMContentLoaded", function() {
-    const countrySelect = document.getElementById("id_country");
-    const provinceSelect = document.getElementById("id_province");
-    const districtSelect = document.getElementById("id_district");
-    const sectorSelect = document.getElementById("id_sector");
-    const cellSelect = document.getElementById("id_cell");
-    const villageSelect = document.getElementById("id_village");
+    // Replace the input field with the select element
+    inputElement.replaceWith(select);
+    
+    return select; // Return the new select element for reassignment
+}
 
-    // Load JSON data from file
-    fetch("{% static 'json/rwanda_geo.json' %}") 
-      .then(response => response.json())
-      .then(data => {
-        const locationMap = data;
+document.addEventListener("DOMContentLoaded", function () {
+    let countrySelect = document.getElementById("id_country");
+    let provinceSelect = document.getElementById("id_province");
+    let districtSelect = document.getElementById("id_district");
+    let sectorSelect = document.getElementById("id_sector");
+    let cellSelect = document.getElementById("id_cell");
+    let villageSelect = document.getElementById("id_village");
 
-        // Populate the Country dropdown
-        populateDropdown(countrySelect, Object.keys(locationMap));
+    fetch("{% static 'json/rwanda_geo.json' %}")
+        .then(response => response.json())
+        .then(data => {
+            const locationMap = data;
 
-        countrySelect.addEventListener("change", function() {
-          // Populate the Province dropdown based on the selected country
-          const countryValue = this.value;
-          if (countryValue) {
-            populateDropdown(provinceSelect, Object.keys(locationMap[countryValue]));
-          } else {
-            populateDropdown(provinceSelect, []);
-          }
-        //   districtSelect.innerHTML = sectorSelect.innerHTML = cellSelect.innerHTML = villageSelect.innerHTML = '<option value="">Select</option>';
-        });
+            // Convert text input into a dropdown
+            countrySelect = populateDropdown(countrySelect, Object.keys(locationMap));
 
-        provinceSelect.addEventListener("change", function() {
-          // Populate the District dropdown based on the selected province
-          const countryValue = countrySelect.value;
-          const provinceValue = this.value;
-          if (provinceValue) {
-            populateDropdown(districtSelect, Object.keys(locationMap[countryValue][provinceValue]));
-          } else {
-            populateDropdown(districtSelect, []);
-          }
-        //   sectorSelect.innerHTML = cellSelect.innerHTML = villageSelect.innerHTML = '<option value="">Select</option>';
-        });
+            countrySelect.addEventListener("change", function () {
+                const countryValue = this.value;
+                if (countryValue) {
+                    provinceSelect = populateDropdown(provinceSelect, Object.keys(locationMap[countryValue]));
+                } else {
+                    provinceSelect = populateDropdown(provinceSelect, []);
+                }
+            });
 
-        districtSelect.addEventListener("change", function() {
-          // Populate the Sector dropdown based on the selected district
-          const countryValue = countrySelect.value;
-          const provinceValue = provinceSelect.value;
-          const districtValue = this.value;
-          if (districtValue) {
-            populateDropdown(sectorSelect, Object.keys(locationMap[countryValue][provinceValue][districtValue]));
-          } else {
-            populateDropdown(sectorSelect, []);
-          }
-        //   cellSelect.innerHTML = villageSelect.innerHTML = '<option value="">Select</option>';
-        });
+            document.addEventListener("change", function (event) {
+                if (event.target.id === "id_province") {
+                    const countryValue = countrySelect.value;
+                    const provinceValue = event.target.value;
+                    if (provinceValue) {
+                        districtSelect = populateDropdown(districtSelect, Object.keys(locationMap[countryValue][provinceValue]));
+                    } else {
+                        districtSelect = populateDropdown(districtSelect, []);
+                    }
+                }
 
-        sectorSelect.addEventListener("change", function() {
-          // Populate the Cell dropdown based on the selected sector
-          const countryValue = countrySelect.value;
-          const provinceValue = provinceSelect.value;
-          const districtValue = districtSelect.value;
-          const sectorValue = this.value;
-          if (sectorValue) {
-            populateDropdown(cellSelect, Object.keys(locationMap[countryValue][provinceValue][districtValue][sectorValue]));
-          } else {
-            populateDropdown(cellSelect, []);
-          }
-        //   villageSelect.innerHTML = '<option value="">Select</option>';
-        });
+                if (event.target.id === "id_district") {
+                    const countryValue = countrySelect.value;
+                    const provinceValue = provinceSelect.value;
+                    const districtValue = event.target.value;
+                    if (districtValue) {
+                        sectorSelect = populateDropdown(sectorSelect, Object.keys(locationMap[countryValue][provinceValue][districtValue]));
+                    } else {
+                        sectorSelect = populateDropdown(sectorSelect, []);
+                    }
+                }
 
-        cellSelect.addEventListener("change", function() {
-          // Populate the Village dropdown based on the selected cell
-          const countryValue = countrySelect.value;
-          const provinceValue = provinceSelect.value;
-          const districtValue = districtSelect.value;
-          const sectorValue = sectorSelect.value;
-          const cellValue = this.value;
-          if (cellValue) {
-            const villages = locationMap[countryValue][provinceValue][districtValue][sectorValue][cellValue];
-            populateDropdown(villageSelect, villages || []);
-          } else {
-            populateDropdown(villageSelect, []);
-          }
-         });
+                if (event.target.id === "id_sector") {
+                    const countryValue = countrySelect.value;
+                    const provinceValue = provinceSelect.value;
+                    const districtValue = districtSelect.value;
+                    const sectorValue = event.target.value;
+                    if (sectorValue) {
+                        cellSelect = populateDropdown(cellSelect, Object.keys(locationMap[countryValue][provinceValue][districtValue][sectorValue]));
+                    } else {
+                        cellSelect = populateDropdown(cellSelect, []);
+                    }
+                }
+
+                if (event.target.id === "id_cell") {
+                    const countryValue = countrySelect.value;
+                    const provinceValue = provinceSelect.value;
+                    const districtValue = districtSelect.value;
+                    const sectorValue = sectorSelect.value;
+                    const cellValue = event.target.value;
+                    if (cellValue) {
+                        villageSelect = populateDropdown(villageSelect, locationMap[countryValue][provinceValue][districtValue][sectorValue][cellValue] || []);
+                    } else {
+                        villageSelect = populateDropdown(villageSelect, []);
+                    }
+                }
+            });
         })
-        .catch(error => console.error('Error loading JSON:', error));
-    });
+        .catch(error => console.error("Error loading JSON:", error));
+});
 
+// END of selection js_____________________________________________________________________________________________
+      function openCreateModal() {
+        document.getElementById("userModalLabel").innerText = "Add User";
+        document.getElementById("userForm").action = "{% url 'user_create' %}";
+        document.getElementById("first_name").value = "";
+        document.getElementById("last_name").value = "";
+        document.getElementById("userid").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("sex").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("profile_picture").value = "";
+      }
+// Func to edit user________________________________________________________________________________________________________
+      function openEditModal(userId, firstName, lastName, email) {    
+        document.getElementById("userModalLabel").innerText = "Edit User";
+        document.getElementById("userForm").action = "{% url 'user_edit' 0 %}".replace('0', userId);
+        document.getElementById("userId").value = userId;
+        document.getElementById("first_name").value = firstName;
+        document.getElementById("last_name").value = lastName;
+        document.getElementById("email").value = email;
+        // You might need to fetch and populate other fields as well
 
-        // END of selection js_____________________________________________________________________________________________        
+        var modal = new bootstrap.Modal(document.getElementById('AddEditModal'));
+        modal.show();
+      }
+
+      // Func to detele user___________________________________________________________________________________________________________
+      function openDeleteModal(id) {
+        document.getElementById("deleteForm").action = `/delete/${id}/`;
+      }
+      // JavaScript functions to suggest the location_____________________________________________________________________________
+      document.addEventListener("DOMContentLoaded", function () {
+          let locationInput = document.getElementById("locationInput");
+          let suggestionsBox = document.getElementById("locationSuggestions");
+
+          locationInput.addEventListener("input", function () {
+              let query = this.value.trim();
+
+              if (query.length > 0) {
+                  fetch(`/search_location/?q=${query}`)
+                      .then(response => response.json())
+                      .then(data => {
+                          suggestionsBox.innerHTML = ""; // Clear previous suggestions
+                          suggestionsBox.style.display = "block"; // Show suggestions box
+
+                          data.forEach(location => {
+                              let item = document.createElement("div");
+                              item.classList.add("list-group-item", "list-group-item-action");
+                              item.textContent = location.foreign_location; // Ensure correct field name
+
+                              // Click event to set input value
+                              item.onclick = function () {
+                                  locationInput.value = location.foreign_location;
+                                  suggestionsBox.innerHTML = "";
+                                  suggestionsBox.style.display = "none"; // Hide suggestions
+                              };
+
+                              suggestionsBox.appendChild(item);
+                          });
+                      });
+              } else {
+                  suggestionsBox.innerHTML = "";
+                  suggestionsBox.style.display = "none"; // Hide suggestions if query is too short
+              }
+          });
+
+          // Hide suggestions when clicking outside
+          document.addEventListener("click", function (event) {
+              if (!locationInput.contains(event.target) && !suggestionsBox.contains(event.target)) {
+                  suggestionsBox.style.display = "none";
+              }
+          });
+      });
+
     </script>
 </body>
 

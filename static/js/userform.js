@@ -30,6 +30,16 @@ document.addEventListener("DOMContentLoaded", function () {
         section.style.margin="0 15% 0 15%";
         
     });
+    // Position the foreigner field
+    document.querySelectorAll(".foreigner-residence-container").forEach(section =>{
+        section.style.display="block";
+        section.style.marginLeft="10%";
+
+    });
+    document.querySelectorAll(".foreigner-residence-content").forEach(section => {
+        section.style.marginLeft ="5%";
+        
+    });
 
     // Apply styles to form field containers
     document.querySelectorAll(".personal-info-content .mb-3, .residence-info-content .mb-3").forEach(field => {
